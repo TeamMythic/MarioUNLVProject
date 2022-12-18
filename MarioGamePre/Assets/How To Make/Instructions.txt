@@ -1,0 +1,25 @@
+- Package Manager Stuff to Add:
+	- Input System:
+	- URP if not in current porject: (if people are using built in URP they need to switch):
+- PLayer Movement:
+(Settp):
+Create empty Game Object "Player" - reset transform to 0 on x, y, and zed if not at origin:
+	Components: 
+		Sprite Renderer, Rigidbody 2D, Box Collider 2D
+			- Rigidbody2D: make gravity around 4, constraint on z axis:
+	Child Components:
+		Ground Check
+
+Create Plaeyer Movement Script:
+
+Assign Layer Ground to every platform
+
+Create a PhysicMaterial2D with 0,0 for params and assign to RB
+
+ANIMATING:
+	make sure to show the transition from walk to idle to have a fixed duration with a transition on .15
+	because you want to have it where if you slightly press the A or D key they play should animate
+	and not slide
+
+Tilemapping: 
+	To fix small screen tearing in the tile map, make a sprite atlas (2D) and add the spritesheet to it
