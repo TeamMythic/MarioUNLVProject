@@ -8,16 +8,18 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Variables")]
     public int playerId = 0;
     private float horizontal;
-    //6 and 8 are the good speeds for walking and running respectively:
-    [SerializeField] private float speed = 4f;
-    [SerializeField] private float jumpingPower = 16f;
     public bool isFacingRight = true;
     public bool isBigMarioBoolean = false;
     private bool isJumpingUp = false;
 	private bool isJumpingDown = false;
-	private Rigidbody2D myrigidBody2D;
+    private bool isRunning = false;
+    //6 and 8 are the good speeds for walking and running respectively:
+    [SerializeField] private float speed = 4f;
+    [SerializeField] private float jumpingPower = 16f;
+	[HideInInspector] public Rigidbody2D myrigidBody2D;
     public Animator myAnimator;
 	[SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
@@ -27,7 +29,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private BoxCollider2D marioCollider;
     [SerializeField] private BoxCollider2D marioBigCollider;
     private BasicInput myControls;
-    private bool isRunning = false;
     [SerializeField] private Transform myFireballPrefab;
     [SerializeField] private Transform throwLocation;
     private void Awake()

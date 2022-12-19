@@ -28,5 +28,6 @@ public class CoinWorldSpace : MonoBehaviour
 			localTTime += Time.deltaTime / .5f;
             yield return null;
         }
+        Destroy(this.gameObject);
     }
 }

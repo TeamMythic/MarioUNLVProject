@@ -24,10 +24,12 @@ public class inRangeScript : MonoBehaviour
         else if(other.gameObject.GetComponent<MysteryBox>() != null)
         {
             other.gameObject.GetComponent<MysteryBox>().ObjectHit();
+			myPlayerMovement.myrigidBody2D.velocity = new Vector2(myPlayerMovement.myrigidBody2D.velocity.x, -10);
 		}
         else if(other.gameObject.GetComponent<Brick>() != null)
         {
             other.gameObject.GetComponent<Brick>().ObjectHit();
+            myPlayerMovement.myrigidBody2D.velocity = new Vector2(myPlayerMovement.myrigidBody2D.velocity.x, -10);
 		}
     }
 }

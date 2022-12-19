@@ -15,7 +15,7 @@ public class MysteryBox : Randomizer
 	private void Awake()
 	{
 		mySpriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
-		value = randomizeMe(0,5);
+		value = randomizeMe(1,5);
 	}
 	public void ObjectHit()
 	{

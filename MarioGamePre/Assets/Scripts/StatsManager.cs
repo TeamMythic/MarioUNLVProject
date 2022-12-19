@@ -52,7 +52,6 @@ public class StatsManager : MonoBehaviour
     {
         playerData player1 = new playerData("Mario", 0, 0);
 		players.Add(player1);
-        StartCoroutine(timeremainingGoDown());
     }
     private void Update()
     {
@@ -62,6 +61,10 @@ public class StatsManager : MonoBehaviour
         scoreTxt.SetText(players[0].getScore().ToString("000000"));
         coinCountTxt.SetText("X" + players[0].getCoinCount().ToString("00"));
 	}
+    public void startTimer()
+    {
+        StartCoroutine(timeremainingGoDown());
+    }
     private IEnumerator timeremainingGoDown()
     {
         while(timeRemaining > 0)

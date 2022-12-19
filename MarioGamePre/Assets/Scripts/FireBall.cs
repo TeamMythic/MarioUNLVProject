@@ -30,7 +30,7 @@ public class FireBall : MonoBehaviour
             Destroy(other.gameObject);
 			Destroy(this.gameObject);
 		}
-        if (other.contacts[0].normal.x != 0)
+        if (other.contacts[0].normal.x != 0 && other.gameObject.layer != 6)
         {
             Debug.Log(other.gameObject);
             Destroy(this.gameObject);
@@ -42,6 +42,9 @@ public class FireBall : MonoBehaviour
         {
             myRigidbody.velocity = velocity;
         }
-
+        /*if (myRigidbody.velocity.x <= .1f || myRigidbody.velocity.x >= -0.1f)
+        {
+			Destroy(this.gameObject);
+		}*/
     }
 }

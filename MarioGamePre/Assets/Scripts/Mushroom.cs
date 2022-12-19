@@ -1,12 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Mushroom : MonoBehaviour
 {
     private Coroutine deleteMeCo = null;
     private StatsManager myStatsManager;
-    private void Awake()
+    private float directionFacing = 1;
+    [SerializeField] private float speed = 8f;
+    private bool stopmoving;
+    [SerializeField] private Transform RightCheck;
+	[SerializeField] private Transform LeftCheck;
+	private void Awake()
     {
         myStatsManager = GameObject.FindGameObjectWithTag("StatsManager").GetComponent<StatsManager>();
     }
@@ -37,7 +44,6 @@ public class Mushroom : MonoBehaviour
     }
     private IEnumerator lerpUp()
     {
-        Debug.Log("called");
         Vector3 max = this.transform.parent.position + new Vector3(0, .62f, 0);
         Vector3 min = this.transform.parent.position;
         float localTTime = 0;
@@ -49,5 +55,6 @@ public class Mushroom : MonoBehaviour
 		}
 			this.transform.parent.GetComponent<Rigidbody2D>().isKinematic = false;
 			this.transform.parent.GetComponent<PolygonCollider2D>().enabled = true;
+		    this.transform.parent.GetComponent<Rigidbody2D>().gravityScale = 8;
     }
 }
