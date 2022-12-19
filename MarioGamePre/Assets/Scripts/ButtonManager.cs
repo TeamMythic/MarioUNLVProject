@@ -5,11 +5,12 @@ using UnityEngine;
 public class ButtonManager : ButtonStuff
 {//child:
     public StatsManager myStatsManager;
+    public SoundManager soundManager;
     public void Button(string value)
     {
         if(value == "Play")
         {
-            PlayButtonPressed(ref myStatsManager);
+            PlayButtonPressed(ref myStatsManager, ref soundManager);
             return;
         }
 		if (value == "Settings")
@@ -26,8 +27,9 @@ public class ButtonManager : ButtonStuff
 }
 public class ButtonStuff : UIStructures
 {//Parent:
-	public void PlayButtonPressed(ref StatsManager myStatsManager)
+	public void PlayButtonPressed(ref StatsManager myStatsManager, ref SoundManager mySoundManager)
     {//Show characters (we only have mario)
+        mySoundManager.SetupLevelSong();
         theMainMenuObject.mainMenuHolder.SetActive(false);
 		myStatsManager.startTimer();
 	}

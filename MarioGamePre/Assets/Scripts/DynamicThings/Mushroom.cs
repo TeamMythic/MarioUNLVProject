@@ -1,22 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class Mushroom : MonoBehaviour
 {
     private Coroutine deleteMeCo = null;
     private StatsManager myStatsManager;
-    private float directionFacing = 1;
-    [SerializeField] private float speed = 8f;
-    private bool stopmoving;
-    [SerializeField] private Transform RightCheck;
-	[SerializeField] private Transform LeftCheck;
+    private MushroomMovement myMushroomMovement;
 	private void Awake()
     {
         myStatsManager = GameObject.FindGameObjectWithTag("StatsManager").GetComponent<StatsManager>();
-    }
+		myMushroomMovement = this.transform.parent.GetComponent<MushroomMovement>();
+
+	}
     public void DeleteMe()
     {
         deleteMeCo = StartCoroutine(deleteMushroom());
@@ -24,10 +24,10 @@ public class Mushroom : MonoBehaviour
     private IEnumerator deleteMushroom()
     {
         this.transform.GetComponent<BoxCollider2D>().enabled = false;
-        this.transform.parent.GetComponent<PolygonCollider2D>().enabled = false;
+        this.transform.parent.GetComponent<BoxCollider2D>().enabled = false;
         myStatsManager.players[0].addScore(1000);
-        this.transform.parent.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-		this.transform.parent.GetComponent<Rigidbody2D>().isKinematic = true;
+		myMushroomMovement.myRigidBody2D.velocity = Vector2.zero;
+		myMushroomMovement.myRigidBody2D.isKinematic = true;
         float localTTime = 0;
         Vector3 max = this.transform.localScale;
         while(localTTime < 1)
@@ -53,8 +53,9 @@ public class Mushroom : MonoBehaviour
             localTTime += Time.deltaTime / .5f;
             yield return null;
 		}
-			this.transform.parent.GetComponent<Rigidbody2D>().isKinematic = false;
-			this.transform.parent.GetComponent<PolygonCollider2D>().enabled = true;
-		    this.transform.parent.GetComponent<Rigidbody2D>().gravityScale = 8;
+		    myMushroomMovement.myRigidBody2D.isKinematic = false;
+		    myMushroomMovement.myRigidBody2D.gravityScale = 4;
+			this.transform.parent.GetComponent<BoxCollider2D>().enabled = true;
+		    myMushroomMovement.isMoving = true;
     }
 }
