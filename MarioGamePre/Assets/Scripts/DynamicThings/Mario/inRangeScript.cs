@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
-using Unity.VisualScripting;
 using UnityEngine;
-
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 public class inRangeScript : MonoBehaviour
 {
     private PlayerMovement myPlayerMovement;
@@ -11,12 +11,24 @@ public class inRangeScript : MonoBehaviour
     private SoundManager mySoundManager;
     private GameObject flag = null;
     [SerializeField] private Animator cinimaticAnimator;
+    private GameObject transitionPanels;
+    private List<Image> mainPanels;
+    private Camera mainCamera;
+    private Volume myPostProcessing;
+    private Vignette myVignette;
+    private Bloom myBloom;
 	private void Awake()
     {
 		myPlayerMovement = this.gameObject.GetComponent<PlayerMovement>();
         myPlayerEffects = this.gameObject.GetComponent<playerEffects>();
         mySoundManager = GameObject.FindGameObjectWithTag("SoundManager").GetComponent<SoundManager>();
-    }
+		transitionPanels = GameObject.FindGameObjectWithTag("transitionPanels");
+        mainPanels = new List<Image>(transitionPanels.GetComponentsInChildren<Image>());
+        mainCamera = Camera.main;
+        myPostProcessing = mainCamera.gameObject.GetComponent<Volume>();
+		myPostProcessing.profile.TryGet<Vignette>(out myVignette);
+		myPostProcessing.profile.TryGet<Bloom>(out myBloom);
+	}
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.GetComponent<Mushroom>() != null)
@@ -37,7 +49,7 @@ public class inRangeScript : MonoBehaviour
 		}
         if(other.gameObject.GetComponent<Brick>() != null)
         {//Brick:
-            other.gameObject.GetComponent<Brick>().ObjectHit();
+            other.gameObject.GetComponent<Brick>().ObjectHit(myPlayerMovement.myAnimator.runtimeAnimatorController, myPlayerMovement.marioController);
             myPlayerMovement.myrigidBody2D.velocity = new Vector2(myPlayerMovement.myrigidBody2D.velocity.x, -10);
             return;
 		}
@@ -120,12 +132,35 @@ public class inRangeScript : MonoBehaviour
         SpriteRenderer sprite = myPlayerMovement.gameObject.GetComponent<SpriteRenderer>();
         Color32 first = new Color32(255,255,255,255);
 		Color32 second = new Color32(255, 255, 255, 0);
-        while(localTTime < 1)
+		while (localTTime < 1)
         {
             sprite.color = Color32.Lerp(first, second, localTTime);
             localTTime += Time.deltaTime / 1f;
             yield return null;
         }
         sprite.color = second;
+        localTTime = 0;
+        var a = myVignette.intensity.value;
+        var b = 1f;
+        StartCoroutine(fadeOutBackground());
+        while (localTTime < 1)
+        {
+            myVignette.intensity.value = Mathf.Lerp(a,b, localTTime);
+            localTTime += Time.deltaTime / 2f;
+            yield return null;
+        }
 	}
+    private IEnumerator fadeOutBackground()
+    {
+		Color32 third = new Color32(0, 0, 0, 0);
+		Color32 fourth = new Color32(0, 0, 0, 255);
+		float localTTime = 0f;
+        while(localTTime < 1)
+        {
+			mainPanels[0].color = Color32.Lerp(third, fourth, localTTime);
+			localTTime += Time.deltaTime / 2f;
+            yield return null;
+        }
+	mainPanels[0].color = fourth;
+    }
 }
