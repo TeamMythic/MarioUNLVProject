@@ -13,15 +13,15 @@ public class inRangeScript : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.gameObject.GetComponent<Mushroom>() != null)
+        if (other.gameObject.GetComponent<Mushroom>() != null)
         {
-            if(!myPlayerMovement.isBigMarioBoolean)
+            if (!myPlayerMovement.isBigMarioBoolean)
             {
-			    myPlayerEffects.marioBig();
+                myPlayerEffects.marioBig();
             }
             other.gameObject.GetComponent<Mushroom>().DeleteMe();
         }
-        else if(other.gameObject.GetComponent<MysteryBox>() != null)
+        if (other.gameObject.GetComponent<MysteryBox>() != null)
         {
             other.gameObject.GetComponent<MysteryBox>().ObjectHit();
 			myPlayerMovement.myrigidBody2D.velocity = new Vector2(myPlayerMovement.myrigidBody2D.velocity.x, -10);

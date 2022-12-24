@@ -60,7 +60,6 @@ public class PlayerMovement : MonoBehaviour
     }
     private void MovementChange(InputAction.CallbackContext context)
     {
-        Debug.Log(context.ReadValue<Vector2>());
         Vector2 inputVector = context.ReadValue<Vector2>();
         horizontal = inputVector.x;
 	}

@@ -1,21 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
-public class MysteryBox : Randomizer
+public class Brick : Randomizer
 {
-	[SerializeField] private Sprite mysteryBlockHit;
-	[SerializeField] private Sprite mysterBlockNotHit;
-	[SerializeField] private GameObject mushroomPrefab = null;
+	[SerializeField] private GameObject coinPrefab = null;
 	[SerializeField] private Transform location = null;
 	[SerializeField] private BoxCollider2D trigger;
-	private int value;
+	[SerializeField] private Transform particleEffect;
+	private int amountOfCoins = 0;
 	private SpriteRenderer mySpriteRenderer;
 	private void Awake()
 	{
 		mySpriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
-		value = randomizeMe(1,2);
+		if(randomizeMe(0, 3) > 1)// 3rd chance
+		{//Then it contains a coin:
+			amountOfCoins = randomizeMe(1, 4);//1 - 4
+		}
 	}
 	public void ObjectHit()
 	{
@@ -23,7 +24,10 @@ public class MysteryBox : Randomizer
 	}
 	private IEnumerator animate()
 	{
-		trigger.enabled = false;
+		if(amountOfCoins <= 0)
+		{
+			trigger.enabled = false;
+		}
 		float localTTime = 0f;
 		Vector3 min = transform.position;
 		Vector3 max = transform.position + new Vector3(0, .35f, 0);
@@ -33,19 +37,20 @@ public class MysteryBox : Randomizer
 			localTTime += Time.deltaTime / .1f;
 			yield return null;
 		}
+		if(amountOfCoins == 0)
+		{
+			Instantiate(particleEffect, this.transform.position, this.transform.rotation);
+			Destroy(this.gameObject);
+		}
+		var obj = Instantiate(coinPrefab, location.position, location.rotation);
+		obj.GetComponent<CoinWorldSpace>().callCollectedEffect();
 		localTTime = 0f;
 		while (localTTime < 1)
 		{
 			this.transform.position = Vector3.Lerp(max, min, localTTime);
-			localTTime += Time.deltaTime / .2f;
+			localTTime += Time.deltaTime / .1f;
 			yield return null;
 		}
-		mySpriteRenderer.sprite = mysteryBlockHit;
-		if(value == 1)
-		{//1 in 6 chance to get mushroom
-			var obj = Instantiate(mushroomPrefab, location.position, location.rotation);
-			obj.transform.parent = null;
-			obj.GetComponentInChildren<Mushroom>().callLerpUp();
-		}
+		amountOfCoins--;
 	}
 }

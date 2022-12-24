@@ -19,7 +19,7 @@ public class SoundManager : MonoBehaviour
     private IEnumerator waitToPlaySpedUp()
     {
         myAudioSource.loop = true;
-        yield return new WaitForSeconds(210);
+        yield return new WaitForSeconds(275);
         speedUpSong();
         myAudioSource.loop = false;
 

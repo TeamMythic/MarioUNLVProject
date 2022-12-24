@@ -10,12 +10,10 @@ public class Mushroom : MonoBehaviour
 {
     private Coroutine deleteMeCo = null;
     private StatsManager myStatsManager;
-    private MushroomMovement myMushroomMovement;
+    [SerializeField] private MushroomMovement myMushroomMovement;
 	private void Awake()
     {
         myStatsManager = GameObject.FindGameObjectWithTag("StatsManager").GetComponent<StatsManager>();
-		myMushroomMovement = this.transform.parent.GetComponent<MushroomMovement>();
-
 	}
     public void DeleteMe()
     {
@@ -23,11 +21,12 @@ public class Mushroom : MonoBehaviour
     }
     private IEnumerator deleteMushroom()
     {
+		myMushroomMovement.myRigidBody2D.isKinematic = true;
         this.transform.GetComponent<BoxCollider2D>().enabled = false;
-        this.transform.parent.GetComponent<BoxCollider2D>().enabled = false;
+		myMushroomMovement.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         myStatsManager.players[0].addScore(1000);
 		myMushroomMovement.myRigidBody2D.velocity = Vector2.zero;
-		myMushroomMovement.myRigidBody2D.isKinematic = true;
+        myMushroomMovement.isMoving = false;
         float localTTime = 0;
         Vector3 max = this.transform.localScale;
         while(localTTime < 1)
@@ -53,9 +52,10 @@ public class Mushroom : MonoBehaviour
             localTTime += Time.deltaTime / .5f;
             yield return null;
 		}
-		    myMushroomMovement.myRigidBody2D.isKinematic = false;
+			myMushroomMovement.myRigidBody2D.isKinematic = false;
 		    myMushroomMovement.myRigidBody2D.gravityScale = 4;
-			this.transform.parent.GetComponent<BoxCollider2D>().enabled = true;
+		    myMushroomMovement.gameObject.GetComponent<BoxCollider2D>().enabled = true;
+            myMushroomMovement.directionFacing = 1f;
 		    myMushroomMovement.isMoving = true;
     }
 }
