@@ -8,6 +8,11 @@ TagManager:
   - StatsManager
   - Fireball
   - SoundManager
+  - CollisionFlip
+  - Flag
+  - FlagBase
+  - ActualFlag
+  - CastleTransform
   layers:
   - Default
   - TransparentFX
@@ -20,8 +25,8 @@ TagManager:
   - UIRendering
   - Don't Interact With Player
   - Player
-  - 
-  - 
+  - MysteryBlock
+  - movementFlip
   - 
   - 
   - 

@@ -15,31 +15,16 @@ public class MysteryBox : Randomizer
 	private void Awake()
 	{
 		mySpriteRenderer = this.gameObject.GetComponent<SpriteRenderer>();
-		value = randomizeMe(0,4);//4th chance to get a mushroom
+		value = randomizeMe(1,2);//4th chance to get a mushroom
 	}
 	public void ObjectHit()
 	{
-		StartCoroutine(animate());
+		animate();
 	}
-	private IEnumerator animate()
+	private void animate()
 	{
 		trigger.enabled = false;
-		float localTTime = 0f;
-		Vector3 min = transform.position;
-		Vector3 max = transform.position + new Vector3(0, .35f, 0);
-		while (localTTime < 1)
-		{
-			this.transform.position = Vector3.Lerp(min, max, localTTime);
-			localTTime += Time.deltaTime / .1f;
-			yield return null;
-		}
-		localTTime = 0f;
-		while (localTTime < 1)
-		{
-			this.transform.position = Vector3.Lerp(max, min, localTTime);
-			localTTime += Time.deltaTime / .2f;
-			yield return null;
-		}
+		lerpSomethingPositionSelf(transform.position, transform.position + new Vector3(0, .35f, 0), .1f, true, .2f);
 		mySpriteRenderer.sprite = mysteryBlockHit;
 		if(value == 1)
 		{//1 in 6 chance to get mushroom

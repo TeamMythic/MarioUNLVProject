@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinWorldSpace : MonoBehaviour
+public class CoinWorldSpace : LerpMacros
 {
     private SpriteRenderer mySpriteRenderer;
     private StatsManager myStatsManager;
@@ -13,21 +13,12 @@ public class CoinWorldSpace : MonoBehaviour
     }
     public void callCollectedEffect()
     {
-        StartCoroutine(collected());
+        collected();
     }
-    private IEnumerator collected()
+    private void collected()
     {
         myStatsManager.players[0].addCoins(1);
-		float localTTime = 0;
-        Vector3 min = this.transform.position;
-        Vector3 max = this.transform.position + new Vector3(0f, 0.5f, 0f);
-        while(localTTime < 1)
-        {
-            this.transform.position = Vector3.Lerp(min, max, localTTime);
-            mySpriteRenderer.color = Color.Lerp(new Color32(255,255,255,255), new Color(255,255,255,0), localTTime);
-			localTTime += Time.deltaTime / .5f;
-            yield return null;
-        }
-        Destroy(this.gameObject);
+        lerpSomethingPositionSelf(this.transform.position, this.transform.position + new Vector3(0f, 0.5f, 0f), .5f, this.gameObject);
+        lerpSomethingColor(new Color32(255, 255, 255, 255), new Color(255, 255, 255, 0), .35f, this.gameObject, mySpriteRenderer);
     }
 }

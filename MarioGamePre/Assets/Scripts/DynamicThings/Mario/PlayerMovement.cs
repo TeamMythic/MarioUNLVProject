@@ -8,27 +8,31 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Variables")]
+    [Header("Variables:")]
     public int playerId = 0;
     private float horizontal;
     public bool isFacingRight = true;
     public bool isBigMarioBoolean = false;
     private bool isJumpingUp = false;
 	private bool isJumpingDown = false;
-    private bool isRunning = false;
-    //6 and 8 are the good speeds for walking and running respectively:
-    [SerializeField] private float speed = 4f;
+    public float speed = 6f;
     [SerializeField] private float jumpingPower = 16f;
-	[HideInInspector] public Rigidbody2D myrigidBody2D;
+	[HideInInspector] public bool isRunning = false;
+    [HideInInspector] public bool overideAnimator = false;
+    //6 and 8 are the good speeds for walking and running respectively:
+
+    [Header("Components:")]
     public Animator myAnimator;
-	[SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
     public AnimatorController marioController;
     public AnimatorController marioBigController;
-
-    [SerializeField] private BoxCollider2D marioCollider;
-    [SerializeField] private BoxCollider2D marioBigCollider;
+	[HideInInspector] public Rigidbody2D myrigidBody2D;
+	[SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    public BoxCollider2D marioCollider;
+    public BoxCollider2D marioBigCollider;
     private BasicInput myControls;
+
+    [Header("Transforms")]
     [SerializeField] private Transform myFireballPrefab;
     [SerializeField] private Transform throwLocation;
     private void Awake()
@@ -40,7 +44,25 @@ public class PlayerMovement : MonoBehaviour
 		myControls.BasicInputMapping.Running.performed += setRunning;
         myControls.BasicInputMapping.Move.performed += MovementChange;
         myControls.BasicInputMapping.Throw.performed += shootFireBall;
-
+        myControls.BasicInputMapping.Jump.performed += jump;
+        myControls.BasicInputMapping.ReleaseJump.performed += releaseJump;
+	}
+    private void jump(InputAction.CallbackContext context)
+    {
+        if(context.performed)
+        {
+            if(isGrounded())
+            {
+			    myrigidBody2D.velocity = new Vector2(myrigidBody2D.velocity.x, jumpingPower);
+            }
+		}
+    }
+    private void releaseJump(InputAction.CallbackContext context)
+    {
+		if (myrigidBody2D.velocity.y > 0f)
+		{
+			myrigidBody2D.velocity = new Vector2(myrigidBody2D.velocity.x, myrigidBody2D.velocity.y * 0.5f);
+		}
 	}
     private void shootFireBall(InputAction.CallbackContext context)
     {
@@ -89,78 +111,87 @@ public class PlayerMovement : MonoBehaviour
             isRunning = !isRunning;
             if(isRunning)
             {
+                if(myAnimator.runtimeAnimatorController == marioBigController)
+                {
+                    speed = 12;
+                    return;
+                }
+                speed = 10;
+                return;
+            }
+            if(myAnimator.runtimeAnimatorController == marioBigController)
+            {
                 speed = 8;
                 return;
             }
             speed = 6;
         }
     }
-
-    private void animationCheck()
+    private void setJumping(bool up, bool down)
     {
-		if (myrigidBody2D.velocity.y > 0.1f)
-		{//Going:
-			isJumpingUp = true;
-			isJumpingDown = false;
-		}
-		else if (myrigidBody2D.velocity.y < -0.1f)
-		{//Going Down:
-			isJumpingUp = false;
-			isJumpingDown = true;
-		}
-		else
-		{//we aren't moving up or down:
-			isJumpingDown = false;
-			isJumpingUp = false;
-		}
-
-		if (isJumpingUp)
-        {
-			myAnimator.SetBool("jumpingUp", true);
-			myAnimator.SetBool("jumpingDown", false);
-		}
-        else if(isJumpingDown)
-        {
-			myAnimator.SetBool("jumpingUp", false);
-			myAnimator.SetBool("jumpingDown", true);
-		}
-        else
-        {
-			myAnimator.SetBool("jumpingUp", false);
-			myAnimator.SetBool("jumpingDown", false);
-			if (horizontal != 0)
-			{
-				if (!isRunning)
-                {
-					myAnimator.SetBool("walking", true);
-					myAnimator.SetBool("running", false);
-				}
-                else
-                {
-					myAnimator.SetBool("running", true);
-				}
-			}
-			else
-			{
-				myAnimator.SetBool("running", false);
-				myAnimator.SetBool("walking", false);
-                isRunning = false;
-				speed = 6;
-			}
-		}
+        isJumpingUp = up;
+        isJumpingDown = down;
 	}
-    private void Update()
+	private void setAnimations(string setValue, bool type, string setValue2, bool type2)
+	{
+		myAnimator.SetBool(setValue, type);
+		myAnimator.SetBool(setValue2, type2);
+	}
+	private void setAnimations(string setValue, bool type)
+    {
+        myAnimator.SetBool(setValue, type);
+	}
+    private void animationCheck()
     {
 		Vector2 inputVector = myControls.BasicInputMapping.Move.ReadValue<Vector2>();
 		horizontal = inputVector.x;
-		if (Input.GetButtonDown("Jump") && isGrounded())
-        {
-            myrigidBody2D.velocity = new Vector2(myrigidBody2D.velocity.x, jumpingPower);
+		if (!overideAnimator)
+        { 
+		    if (myrigidBody2D.velocity.y > 0.1f)
+		    {//Going:
+                setJumping(true, false);
+		    }
+		    else if (myrigidBody2D.velocity.y < -0.1f)
+		    {//Going Down:
+                setJumping(false, true);
+		    }
+		    else
+		    {//we aren't moving up or down:
+                setJumping(false, false);
+		    }
+		    if (isJumpingUp)
+            {
+                setAnimations("jumpingUp", true, "jumpingDown", false);
+		    }
+            else if(isJumpingDown)
+            {
+				setAnimations("jumpingUp", false, "jumpingDown", true);
+		    }
+            else
+            {
+				setAnimations("jumpingUp", false, "jumpingDown", false);
+			    if (horizontal != 0)
+			    {
+				    if (!isRunning)
+                    {
+						setAnimations("walking", true, "running", false);
+				    }
+                    else
+                    {
+						setAnimations("running", true);
+				    }
+			    }
+			    else
+			    {
+					setAnimations("running", false, "walking", false);
+                    isRunning = false;
+				    speed = 6;
+			    }
+		    }
         }
-        if(Input.GetButtonUp("Jump") && myrigidBody2D.velocity.y > 0f)
-        {
-            myrigidBody2D.velocity = new Vector2(myrigidBody2D.velocity.x, myrigidBody2D.velocity.y * 0.5f);
-        }
+	}
+    private void Update()
+    {
         animationCheck();
 		Flip();
     }

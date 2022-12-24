@@ -53,6 +53,24 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""7301e2cf-fb42-4a66-b0d1-38313a2b91cb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press"",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ReleaseJump"",
+                    ""type"": ""Button"",
+                    ""id"": ""c8564f1d-3a91-4c62-9de8-60a12a86c6d5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(behavior=1)"",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -121,6 +139,28 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
                     ""action"": ""Throw"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4591a13f-e028-44ee-b2a8-82008980b87c"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""08418e79-fd44-4b37-82de-b5c323ac9b02"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ReleaseJump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -132,6 +172,8 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
         m_BasicInputMapping_Running = m_BasicInputMapping.FindAction("Running", throwIfNotFound: true);
         m_BasicInputMapping_Move = m_BasicInputMapping.FindAction("Move", throwIfNotFound: true);
         m_BasicInputMapping_Throw = m_BasicInputMapping.FindAction("Throw", throwIfNotFound: true);
+        m_BasicInputMapping_Jump = m_BasicInputMapping.FindAction("Jump", throwIfNotFound: true);
+        m_BasicInputMapping_ReleaseJump = m_BasicInputMapping.FindAction("ReleaseJump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -194,6 +236,8 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
     private readonly InputAction m_BasicInputMapping_Running;
     private readonly InputAction m_BasicInputMapping_Move;
     private readonly InputAction m_BasicInputMapping_Throw;
+    private readonly InputAction m_BasicInputMapping_Jump;
+    private readonly InputAction m_BasicInputMapping_ReleaseJump;
     public struct BasicInputMappingActions
     {
         private @BasicInput m_Wrapper;
@@ -201,6 +245,8 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
         public InputAction @Running => m_Wrapper.m_BasicInputMapping_Running;
         public InputAction @Move => m_Wrapper.m_BasicInputMapping_Move;
         public InputAction @Throw => m_Wrapper.m_BasicInputMapping_Throw;
+        public InputAction @Jump => m_Wrapper.m_BasicInputMapping_Jump;
+        public InputAction @ReleaseJump => m_Wrapper.m_BasicInputMapping_ReleaseJump;
         public InputActionMap Get() { return m_Wrapper.m_BasicInputMapping; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -219,6 +265,12 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
                 @Throw.started -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnThrow;
                 @Throw.performed -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnThrow;
                 @Throw.canceled -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnThrow;
+                @Jump.started -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnJump;
+                @ReleaseJump.started -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnReleaseJump;
+                @ReleaseJump.performed -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnReleaseJump;
+                @ReleaseJump.canceled -= m_Wrapper.m_BasicInputMappingActionsCallbackInterface.OnReleaseJump;
             }
             m_Wrapper.m_BasicInputMappingActionsCallbackInterface = instance;
             if (instance != null)
@@ -232,6 +284,12 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
                 @Throw.started += instance.OnThrow;
                 @Throw.performed += instance.OnThrow;
                 @Throw.canceled += instance.OnThrow;
+                @Jump.started += instance.OnJump;
+                @Jump.performed += instance.OnJump;
+                @Jump.canceled += instance.OnJump;
+                @ReleaseJump.started += instance.OnReleaseJump;
+                @ReleaseJump.performed += instance.OnReleaseJump;
+                @ReleaseJump.canceled += instance.OnReleaseJump;
             }
         }
     }
@@ -241,5 +299,7 @@ public partial class @BasicInput : IInputActionCollection2, IDisposable
         void OnRunning(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnThrow(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
+        void OnReleaseJump(InputAction.CallbackContext context);
     }
 }

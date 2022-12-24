@@ -9,26 +9,25 @@ public class SoundManager : MonoBehaviour
 	[SerializeField] private AudioClip gameOverSoundEffect;
 	[SerializeField] private AudioClip deathSoundEffect;
 	[SerializeField] private AudioClip levelCompleteSoundEffect;
+    [SerializeField] private AudioClip flagCollectedSoundEffect;
 	private AudioSource myAudioSource;
     [HideInInspector] public Coroutine waitToPlaySpedUpSong = null;
     private void Awake()
     {
         myAudioSource = this.gameObject.GetComponent<AudioSource>();
-        waitToPlaySpedUpSong = StartCoroutine(waitToPlaySpedUp());
     }
     private IEnumerator waitToPlaySpedUp()
     {
-        myAudioSource.loop = true;
         yield return new WaitForSeconds(275);
         speedUpSong();
-        myAudioSource.loop = false;
-
 	}
     public void SetupLevelSong()
     {
-        myAudioSource.clip = overworldSong;
+		myAudioSource.loop = true;
+		myAudioSource.clip = overworldSong;
         myAudioSource.Play();
-    }
+		waitToPlaySpedUpSong = StartCoroutine(waitToPlaySpedUp());
+	}
     public void speedUpSong()
     {
 		myAudioSource.Stop();
@@ -37,18 +36,30 @@ public class SoundManager : MonoBehaviour
 	}
     public void playDeathEffectSound()
     {
-        myAudioSource.Stop();
+		myAudioSource.loop = false;
+		myAudioSource.Stop();
         myAudioSource.clip = deathSoundEffect;
         myAudioSource.Play();
     }
     public void levelComplete()
     {
+		myAudioSource.loop = false;
 		myAudioSource.Stop();
 		myAudioSource.clip = levelCompleteSoundEffect;
         myAudioSource.Play();
     }
+    public IEnumerator flagCollected()
+    {
+		myAudioSource.loop = false;
+		myAudioSource.Stop();
+        myAudioSource.clip = flagCollectedSoundEffect;
+        myAudioSource.Play();
+        yield return new WaitForSeconds(2f);
+        levelComplete();
+	}
     public void GameOver()
     {
+        myAudioSource.loop = false;
 		myAudioSource.Stop();
 		myAudioSource.clip = gameOverSoundEffect;
 		myAudioSource.Play();
